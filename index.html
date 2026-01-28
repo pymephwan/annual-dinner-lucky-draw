@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Annual Dinner 抽獎</title>
+  <style>
+    :root { --bg:#0b0f19; --card:#111827; --text:#e5e7eb; --muted:#9ca3af; --line:#243041; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: system-ui, -apple-system, "PingFang HK", "Noto Sans TC", sans-serif;
+      background: var(--bg); color: var(--text);
+    }
+    header {
+      padding: 14px 18px; border-bottom: 1px solid var(--line);
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+    }
+    header .title { font-weight: 900; letter-spacing: .5px; }
+    header .controls { display:flex; gap:10px; flex-wrap: wrap; }
+
+    button {
+      background: #1f2937; color: var(--text);
+      border: 1px solid #374151; border-radius: 10px;
+      padding: 10px 12px; cursor:pointer; font-weight: 800;
+    }
+    button:hover { filter: brightness(1.08); }
+    button.danger { border-color:#7f1d1d; background:#3f0d0d; }
+
+    main { padding: 16px; }
+
+    /* ===== Layout: Left / Right (Right wider) ===== */
+    .layout {
+      display:grid;
+      grid-template-columns: .95fr 1.05fr; /* right wider */
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 1100px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+
+    .label { color: var(--muted); font-size: 13px; margin-bottom: 10px; font-weight: 900; letter-spacing: .2px; }
+    .hint { color: var(--muted); font-size: 13px; font-weight: 650; }
+
+    /* ===== Select base ===== */
+    select {
+      border-radius: 14px;
+      border: 1px solid #374151;
+      background: #0f172a;
+      color: var(--text);
+      font-weight: 900;
+      outline: none;
+    }
+
+    /* ===== Left panel (draw) ===== */
+    .center {
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      text-align:center;
+    }
+    .inputRow { display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap; }
+
+    .drawSelect {
+      width: 220px;
+      padding: 12px 12px;
+      font-size: 18px;
+      text-align-last: center;
+    }
+
+    .bigNumber {
+      font-size: clamp(90px, 14vw, 190px);
+      line-height: 1;
+      font-weight: 950;
+      letter-spacing: 2px;
+      margin: 14px 0 10px;
+    }
+
+    .hitBox {
+      width: min(860px, 96%);
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      background: #0f172a;
+      text-align:left;
+    }
+    .hitList { margin: 0; padding-left: 18px; display:grid; gap: 6px; }
+
+    .historyWrap { width: min(1000px, 98%); margin-top: 12px; }
+    .history {
+      display:flex; flex-wrap:wrap; gap:10px;
+      justify-content:center;
+      max-height: 220px; overflow:auto;
+      padding: 8px 6px 2px;
+    }
+    .badge {
+      background:#0b1220; border:1px solid #334155;
+      border-radius: 14px; padding: 10px 14px;
+      font-weight: 950;
+      font-size: 22px;
+      min-width: 56px;
+      text-align:center;
+    }
+
+    /* ===== Right panel (table) ===== */
+    .tableTopRow { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+    .pill {
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px; border-radius: 999px;
+      background:#0f172a; border:1px solid #243041;
+      font-weight: 900;
+    }
+    .smallNote { color: var(--muted); font-size: 12px; margin-top: 6px; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align:left; vertical-align: top; }
+    th { color: var(--muted); font-size: 13px; font-weight: 950; }
+    td { font-size: 14px; }
+
+    .count { font-size: 22px; font-weight: 950; }
+
+    .hits { display:flex; flex-wrap:wrap; gap:6px; }
+    .hitNum {
+      padding: 4px 8px;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      background:#0f172a;
+      font-weight: 950;
+    }
+
+    /* employee name bigger */
+    .empName {
+      font-size: 18px;
+      font-weight: 950;
+      letter-spacing: .2px;
+    }
+
+    /* smaller dropdowns + hide arrow */
+    .numEdit {
+      display:flex; flex-wrap:wrap; gap:6px;
+      align-items:center;
+    }
+    .numEdit select {
+      width: 58px;
+      padding: 7px 8px;
+      font-size: 14px;
+      text-align-last: center;
+      border-radius: 10px;
+      background: #0b1220;
+
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: none !important;
+    }
+    .numEdit select::-ms-expand { display: none; }
+
+    @media (max-width: 900px) {
+      .badge { font-size: 18px; padding: 9px 12px; min-width: 50px; }
+      .drawSelect { width: 200px; }
+      .numEdit select { width: 54px; }
+      .empName { font-size: 17px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="title">🎱 Annual Dinner 抽獎</div>
+    <div class="controls">
+      <button id="btnFullscreen">Fullscreen</button>
+      <button id="btnUndo">Undo 上一個</button>
+      <button class="danger" id="btnReset">Reset 全部</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="layout">
+      <!-- LEFT: Draw -->
+      <section class="card center">
+        <div class="label">選擇攪出號碼</div>
+        <div class="inputRow">
+          <select id="selectDraw" class="drawSelect"></select>
+          <button id="btnAdd">加入</button>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="label">最新攪出號碼</div>
+        <div class="bigNumber" id="lastNumber">—</div>
+
+        <div class="hitBox">
+          <div class="label" style="margin-bottom:8px;">即時命中名單</div>
+          <ul class="hitList" id="hitList">
+            <li class="hint">未有攪出號碼</li>
+          </ul>
+        </div>
+
+        <div class="historyWrap">
+          <div class="label" style="margin-top:14px;">攪珠歷史（按次序）</div>
+          <div class="history" id="history"></div>
+        </div>
+      </section>
+
+      <!-- RIGHT: Table -->
+      <section class="card">
+        <div class="tableTopRow">
+          <div>
+            <div class="label" style="margin-bottom:6px;">累積結果</div>
+            <div class="pill">已攪出 <span id="drawnCount">0</span> 個</div>
+          </div>
+          <div class="controls" style="gap:10px;">
+            <button id="btnToggleAll">顯示全部員工</button>
+          </div>
+        </div>
+
+        <div style="overflow:auto; margin-top: 10px;">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:48px;">#</th>
+                <th style="min-width:170px;">員工</th>
+                <th style="width:90px;">命中</th>
+                <th style="min-width:220px;">命中號碼</th>
+                <th style="min-width:320px;">自選號碼</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+<script>
+/** ====== 你只要改呢度：員工名 + 6 個號碼 ====== */
+const EMPLOYEES = [
+  { name: "Fai", nums: [1, 2, 3, 4, 5, 6] },
+  { name: "Lily", nums: [11, 12, 13, 14, 15, 16] },
+  { name: "Faye Faye", nums: [21, 22, 23, 24, 25, 26] },
+  { name: "毅毅", nums: [31, 32, 33, 34, 35, 36] },
+  { name: "Loren", nums: [3, 11, 17, 25, 35, 46] },
+  { name: "Minhee", nums: [7, 8, 9, 10, 11, 12] },
+  { name: "Jenna", nums: [17, 18, 19, 20, 21, 22] },
+  { name: "Jacky", nums: [44, 45, 46, 47, 48, 49] },
+  { name: "Magic", nums: [8, 16, 24, 32, 40, 48] },
+  { name: "Candy", nums: [1, 10, 14, 22, 26, 33] },
+  { name: "江仔(Kong)", nums: [1, 2, 3, 4, 5, 6] },
+  { name: "Allen", nums: [3, 9, 11, 15, 19, 23] },
+  { name: "Winner", nums: [1, 10, 11, 12, 26, 31] },
+  { name: "娜姐(Na)", nums: [8, 16, 17, 18, 36, 44] },
+  { name: "Tony(WH)", nums: [1, 5, 8, 10, 12, 16] },
+  { name: "麗姐(Lai)", nums: [7, 13, 16, 26, 28, 36] },
+  { name: "Percy", nums: [44, 45, 46, 47, 48, 49] },
+  { name: "Lun", nums: [6, 8, 21, 24, 30, 35] },
+  { name: "Cherry", nums: [2, 3, 7, 10, 12, 24] },
+  { name: "Yui", nums: [7, 16, 26, 29, 43, 49] },
+  { name: "Annie", nums: [1, 12, 23, 24, 25, 28] },
+  { name: "Paul", nums: [9, 14, 16, 25, 26, 35] },
+  { name: "Tony(Sales)", nums: [16, 20, 28, 38, 42, 44] },
+  { name: "Mephy", nums: [10, 11, 12, 13, 14, 49] },
+  { name: "Sin", nums: [1, 3, 6, 8, 13, 18] },
+  { name: "Lydia", nums: [2, 7, 11, 28, 30, 32] },
+  { name: "Andy", nums: [8, 12, 26, 33, 35, 43] },
+  { name: "良(Leung)", nums: [6, 18, 32, 33, 46, 48] },
+  { name: "Eva", nums: [6, 11, 13, 18, 22, 40] },
+  { name: "Grace", nums: [11, 18, 21, 45, 47, 49] },
+  { name: "Ico", nums: [3, 7, 10, 21, 26, 32] },
+  { name: "Jerry", nums: [9, 15, 17, 23, 36, 48] },
+  { name: "阿源(Yuen)", nums: [13, 14, 28, 33, 40, 44] },
+  { name: "阿軒(Hin)", nums: [7, 14, 21, 28, 35, 49] },
+  { name: "阿熹(Hei)", nums: [1, 7, 8, 10, 11, 18] },
+  { name: "阿力(Lik)", nums: [6, 7, 28, 30, 38, 40] },
+  { name: "娣姐(Tai)", nums: [1, 7, 11, 13, 14, 16] },
+  { name: "東哥(Tung Gor)", nums: [4, 11, 16, 24, 45, 48] },
+  { name: "航哥(Hong Gor)", nums: [2, 18, 19, 26, 40, 48] },
+  { name: "Keith", nums: [2, 4, 6, 7, 24, 47] },
+  { name: "Flora", nums: [7, 14, 23, 28, 35, 42] },
+  { name: "Ryan", nums: [6, 8, 12, 21, 30, 33] },
+  { name: "Phoebe", nums: [5, 18, 26, 33, 38, 42] },
+  { name: "Steve", nums: [8, 16, 24, 32, 40, 48] },
+  { name: "Jesse", nums: [1, 2, 6, 11, 17, 49] },
+  { name: "Jeffery Yip", nums: [5, 6, 12, 26, 35, 42] },
+  { name: "Sean", nums: [5, 8, 9, 19, 23, 45] },
+  { name: "Minto", nums: [7, 9, 24, 27, 35, 36] },
+  { name: "Tim", nums: [8, 14, 21, 33, 41, 47] },
+  { name: "Joseph", nums: [7, 9, 16, 22, 28, 45] },
+  { name: "Joyce", nums: [2, 4, 7, 18, 24, 36] },
+  { name: "Yeonu", nums: [3, 9, 14, 22, 31, 43] },
+  { name: "Shania", nums: [2, 17, 24, 31, 39, 48] },
+  { name: "Shin", nums: [5, 7, 18, 21, 28, 33] },
+  { name: "Han", nums: [7, 11, 13, 22, 35, 41] },
+  { name: "Chul(Everlabs)", nums: [27, 28, 29, 30, 31, 32] },
+  { name: "Kim(Everlabs)", nums: [37, 38, 39, 40, 41, 42] },
+  { name: "Louis", nums: [1, 6, 11, 16, 24, 27] },
+  { name: "JC", nums: [0, 0, 0, 0, 0, 0] },   // TODO: 未提供號碼，請改
+  { name: "Kico", nums: [0, 0, 0, 0, 0, 0] }, // TODO: 未提供號碼，請改
+];
+
+const MAX_NUM = 60;
+const CHOSEN_SLOTS = 6;
+
+const state = {
+  drawn: [],
+  showAll: false,
+  people: EMPLOYEES.map(p => ({
+    name: p.name,
+    nums: expandToSlots(p.nums),
+    hitSet: new Set(),
+  })),
+};
+
+// DOM
+const elLast = document.getElementById("lastNumber");
+const elHitList = document.getElementById("hitList");
+const elHistory = document.getElementById("history");
+const elTbody = document.getElementById("tbody");
+const elDrawnCount = document.getElementById("drawnCount");
+const elToggleAll = document.getElementById("btnToggleAll");
+const elSelectDraw = document.getElementById("selectDraw");
+
+document.getElementById("btnAdd").addEventListener("click", addDrawFromSelect);
+document.getElementById("btnUndo").addEventListener("click", undoLast);
+document.getElementById("btnReset").addEventListener("click", resetAll);
+document.getElementById("btnFullscreen").addEventListener("click", () => {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+});
+
+elToggleAll.addEventListener("click", () => {
+  state.showAll = !state.showAll;
+  elToggleAll.textContent = state.showAll ? "只顯示有中獎員工" : "顯示全部員工（包含未中）";
+  renderTable();
+});
+
+function expandToSlots(nums) {
+  const out = Array(CHOSEN_SLOTS).fill(null);
+  for (let i = 0; i < Math.min(nums.length, CHOSEN_SLOTS); i++) out[i] = nums[i];
+  return out;
+}
+function isValidNum(n) { return Number.isFinite(n) && n >= 1 && n <= MAX_NUM; }
+function getActiveNums(person) { return person.nums.filter(isValidNum); }
+
+function buildOptions() {
+  const frag = document.createDocumentFragment();
+  for (let i = 1; i <= MAX_NUM; i++) {
+    const opt = document.createElement("option");
+    opt.value = String(i);
+    opt.textContent = String(i);
+    frag.appendChild(opt);
+  }
+  return frag;
+}
+
+function initDrawSelect() {
+  elSelectDraw.innerHTML = "";
+  elSelectDraw.appendChild(buildOptions());
+  elSelectDraw.value = "1";
+}
+
+function addDrawFromSelect() {
+  const n = Number(elSelectDraw.value);
+  if (!isValidNum(n)) return;
+  addDraw(n);
+}
+
+function addDraw(n) {
+  state.drawn.push(n);
+  elLast.textContent = String(n);
+
+  const hitNames = [];
+  for (const person of state.people) {
+    if (getActiveNums(person).includes(n)) {
+      person.hitSet.add(n);
+      hitNames.push(person.name);
+    }
+  }
+
+  renderHitList(hitNames, n);
+  renderHistory();
+  renderTable();
+  elDrawnCount.textContent = state.drawn.length;
+}
+
+function renderHitList(hitNames, n) {
+  elHitList.innerHTML = "";
+  if (!state.drawn.length) {
+    elHitList.innerHTML = `<li class="hint">未有攪出號碼</li>`;
+    return;
+  }
+  if (hitNames.length === 0) {
+    const li = document.createElement("li");
+    li.className = "hint";
+    li.textContent = `今次（${n}）無人中`;
+    elHitList.appendChild(li);
+    return;
+  }
+  hitNames.sort((a,b)=>a.localeCompare(b, "zh-Hant"));
+  for (const name of hitNames) {
+    const li = document.createElement("li");
+    li.innerHTML = `<span style="font-weight:950;">${escapeHtml(name)}</span>`;
+    elHitList.appendChild(li);
+  }
+}
+
+function renderHistory() {
+  elHistory.innerHTML = "";
+  for (let i = 0; i < state.drawn.length; i++) {
+    const b = document.createElement("span");
+    b.className = "badge";
+    b.textContent = state.drawn[i];
+    elHistory.appendChild(b);
+  }
+}
+
+function renderTable() {
+  const rows = state.people
+    .map(p => ({
+      name: p.name,
+      hitCount: p.hitSet.size,
+      hits: Array.from(p.hitSet).sort((a,b)=>a-b),
+    }))
+    .filter(r => state.showAll ? true : r.hitCount > 0)
+    .sort((a,b) => {
+      if (b.hitCount !== a.hitCount) return b.hitCount - a.hitCount;
+      return a.name.localeCompare(b.name, "zh-Hant");
+    });
+
+  elTbody.innerHTML = "";
+  rows.forEach((r, idx) => {
+    const tr = document.createElement("tr");
+
+    const tdRank = document.createElement("td");
+    tdRank.textContent = String(idx + 1);
+
+    const tdName = document.createElement("td");
+    tdName.innerHTML = `<span class="empName">${escapeHtml(r.name)}</span>`;
+
+    const tdCount = document.createElement("td");
+    tdCount.innerHTML = `<span class="count">${r.hitCount}</span>`;
+
+    const tdHits = document.createElement("td");
+    const hitsWrap = document.createElement("div");
+    hitsWrap.className = "hits";
+    if (r.hits.length === 0) {
+      const s = document.createElement("span");
+      s.className = "hint";
+      s.textContent = "—";
+      hitsWrap.appendChild(s);
+    } else {
+      r.hits.forEach(n => {
+        const span = document.createElement("span");
+        span.className = "hitNum";
+        span.textContent = n;
+        hitsWrap.appendChild(span);
+      });
+    }
+    tdHits.appendChild(hitsWrap);
+
+    const tdNums = document.createElement("td");
+    const wrap = document.createElement("div");
+    wrap.className = "numEdit";
+
+    const person = state.people.find(p => p.name === r.name);
+
+    for (let i = 0; i < CHOSEN_SLOTS; i++) {
+      const sel = document.createElement("select");
+      sel.appendChild(buildOptions());
+
+      const cur = person.nums[i];
+      sel.value = isValidNum(cur) ? String(cur) : "1";
+
+      sel.addEventListener("change", () => {
+        const v = Number(sel.value);
+        person.nums[i] = isValidNum(v) ? v : person.nums[i];
+        recomputeAllHits();
+      });
+
+      wrap.appendChild(sel);
+    }
+
+    tdNums.appendChild(wrap);
+
+    tr.appendChild(tdRank);
+    tr.appendChild(tdName);
+    tr.appendChild(tdCount);
+    tr.appendChild(tdHits);
+    tr.appendChild(tdNums);
+
+    elTbody.appendChild(tr);
+  });
+}
+
+function recomputeAllHits() {
+  for (const p of state.people) p.hitSet = new Set();
+
+  for (const n of state.drawn) {
+    for (const p of state.people) {
+      if (getActiveNums(p).includes(n)) p.hitSet.add(n);
+    }
+  }
+
+  if (state.drawn.length) {
+    const last = state.drawn[state.drawn.length - 1];
+    const hitNames = [];
+    for (const p of state.people) {
+      if (getActiveNums(p).includes(last)) hitNames.push(p.name);
+    }
+    renderHitList(hitNames, last);
+    elLast.textContent = String(last);
+  } else {
+    elLast.textContent = "—";
+    elHitList.innerHTML = `<li class="hint">未有攪出號碼</li>`;
+  }
+
+  renderHistory();
+  renderTable();
+  elDrawnCount.textContent = state.drawn.length;
+}
+
+function undoLast() {
+  if (state.drawn.length === 0) return;
+  state.drawn.pop();
+  recomputeAllHits();
+}
+
+function resetAll() {
+  const ok = confirm("確定要 Reset 全部？（會清除所有攪珠紀錄）");
+  if (!ok) return;
+
+  state.drawn = [];
+  state.people = EMPLOYEES.map(p => ({
+    name: p.name,
+    nums: expandToSlots(p.nums),
+    hitSet: new Set(),
+  }));
+  state.showAll = false;
+  elToggleAll.textContent = "顯示全部員工（包含未中）";
+
+  elLast.textContent = "—";
+  elHitList.innerHTML = `<li class="hint">未有攪出號碼</li>`;
+  renderHistory();
+  renderTable();
+  elDrawnCount.textContent = "0";
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+// init
+initDrawSelect();
+renderHistory();
+renderTable();
+</script>
+</body>
+</html>
