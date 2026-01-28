@@ -217,7 +217,7 @@
             <div class="pill">已攪出 <span id="drawnCount">0</span> 個</div>
           </div>
           <div class="controls" style="gap:10px;">
-            <button id="btnToggleAll">顯示全部員工</button>
+            <button id="btnToggleAll">顯示全部</button>
           </div>
         </div>
 
@@ -226,7 +226,7 @@
             <thead>
               <tr>
                 <th style="width:48px;">#</th>
-                <th style="min-width:170px;">員工</th>
+                <th style="min-width:170px;">姓名</th>
                 <th style="width:90px;">命中</th>
                 <th style="min-width:220px;">命中號碼</th>
                 <th style="min-width:320px;">自選號碼</th>
@@ -336,7 +336,7 @@ document.getElementById("btnFullscreen").addEventListener("click", () => {
 
 elToggleAll.addEventListener("click", () => {
   state.showAll = !state.showAll;
-  elToggleAll.textContent = state.showAll ? "只顯示有中獎員工" : "顯示全部員工（包含未中）";
+  elToggleAll.textContent = state.showAll ? "只顯示中獎" : "顯示全部（包含未中）";
   renderTable();
 });
 
@@ -567,3 +567,4 @@ renderTable();
 </script>
 </body>
 </html>
+
