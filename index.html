@@ -28,10 +28,10 @@
 
     main { padding: 16px; }
 
-    /* ===== Layout: Left / Right (Right wider) ===== */
+    /* Layout: Left narrower, Right wider */
     .layout {
       display:grid;
-      grid-template-columns: .95fr 1.05fr; /* right wider */
+      grid-template-columns: .78fr 1.22fr;
       gap: 14px;
       align-items:start;
     }
@@ -50,7 +50,7 @@
     .label { color: var(--muted); font-size: 13px; margin-bottom: 10px; font-weight: 900; letter-spacing: .2px; }
     .hint { color: var(--muted); font-size: 13px; font-weight: 650; }
 
-    /* ===== Select base ===== */
+    /* Select base */
     select {
       border-radius: 14px;
       border: 1px solid #374151;
@@ -60,7 +60,7 @@
       outline: none;
     }
 
-    /* ===== Left panel (draw) ===== */
+    /* Left panel (draw) */
     .center {
       display:flex; flex-direction:column; align-items:center; justify-content:center;
       text-align:center;
@@ -68,14 +68,15 @@
     .inputRow { display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap; }
 
     .drawSelect {
-      width: 220px;
+      width: 210px;
       padding: 12px 12px;
       font-size: 18px;
       text-align-last: center;
     }
 
+    /* ✅ Bigger latest drawn number for projector */
     .bigNumber {
-      font-size: clamp(90px, 14vw, 190px);
+      font-size: clamp(120px, 18vw, 260px);
       line-height: 1;
       font-weight: 950;
       letter-spacing: 2px;
@@ -83,7 +84,7 @@
     }
 
     .hitBox {
-      width: min(860px, 96%);
+      width: min(740px, 96%);
       margin-top: 10px;
       border: 1px solid var(--line);
       border-radius: 16px;
@@ -93,7 +94,7 @@
     }
     .hitList { margin: 0; padding-left: 18px; display:grid; gap: 6px; }
 
-    .historyWrap { width: min(1000px, 98%); margin-top: 12px; }
+    .historyWrap { width: min(820px, 98%); margin-top: 12px; }
     .history {
       display:flex; flex-wrap:wrap; gap:10px;
       justify-content:center;
@@ -109,7 +110,7 @@
       text-align:center;
     }
 
-    /* ===== Right panel (table) ===== */
+    /* Right panel (table) */
     .tableTopRow { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
     .pill {
       display:inline-flex; align-items:center; gap:8px;
@@ -135,14 +136,12 @@
       font-weight: 950;
     }
 
-    /* employee name bigger */
     .empName {
       font-size: 18px;
       font-weight: 950;
       letter-spacing: .2px;
     }
 
-    /* smaller dropdowns + hide arrow */
     .numEdit {
       display:flex; flex-wrap:wrap; gap:6px;
       align-items:center;
@@ -162,11 +161,34 @@
     }
     .numEdit select::-ms-expand { display: none; }
 
+    .rpBadge {
+      display:inline-flex;
+      align-items:baseline;
+      gap:8px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid #7f1d1d;
+      background: #2a0a0a;
+      font-weight: 950;
+      letter-spacing: .2px;
+      white-space: nowrap;
+    }
+    .rpBadge .n { font-size: 22px; line-height: 1; }
+    .rpBadge .t {
+      font-size: 12px;
+      color: #fca5a5;
+      font-weight: 900;
+      letter-spacing: .6px;
+    }
+    .rpZero { color: var(--muted); font-weight: 900; }
+
     @media (max-width: 900px) {
       .badge { font-size: 18px; padding: 9px 12px; min-width: 50px; }
       .drawSelect { width: 200px; }
       .numEdit select { width: 54px; }
       .empName { font-size: 17px; }
+      .rpBadge .n { font-size: 20px; }
+      .bigNumber { font-size: clamp(110px, 20vw, 240px); }
     }
   </style>
 </head>
@@ -189,6 +211,7 @@
         <div class="inputRow">
           <select id="selectDraw" class="drawSelect"></select>
           <button id="btnAdd">加入</button>
+          <span class="hint">（下拉：1–60）</span>
         </div>
 
         <div style="height:12px"></div>
@@ -197,7 +220,7 @@
         <div class="bigNumber" id="lastNumber">—</div>
 
         <div class="hitBox">
-          <div class="label" style="margin-bottom:8px;">即時命中名單</div>
+          <div class="label" style="margin-bottom:8px;">＊＊今輪中獎者＊＊</div>
           <ul class="hitList" id="hitList">
             <li class="hint">未有攪出號碼</li>
           </ul>
@@ -217,8 +240,12 @@
             <div class="pill">已攪出 <span id="drawnCount">0</span> 個</div>
           </div>
           <div class="controls" style="gap:10px;">
-            <button id="btnToggleAll">顯示全部</button>
+            <button id="btnToggleAll">顯示全部（包含未中）</button>
           </div>
+        </div>
+
+        <div class="smallNote">
+          規則（按「總命中數」計算，不累加）：1→1｜2→2｜3→3｜4→5｜5→10｜6→20
         </div>
 
         <div style="overflow:auto; margin-top: 10px;">
@@ -226,8 +253,9 @@
             <thead>
               <tr>
                 <th style="width:48px;">#</th>
-                <th style="min-width:170px;">姓名</th>
+                <th style="min-width:170px;">名字</th>
                 <th style="width:90px;">命中</th>
+                <th style="width:140px;">可抽利是</th>
                 <th style="min-width:220px;">命中號碼</th>
                 <th style="min-width:320px;">自選號碼</th>
               </tr>
@@ -240,7 +268,6 @@
   </main>
 
 <script>
-/** ====== 你只要改呢度：員工名 + 6 個號碼 ====== */
 const EMPLOYEES = [
   { name: "Fai", nums: [1, 2, 3, 4, 5, 6] },
   { name: "Lily", nums: [11, 12, 13, 14, 15, 16] },
@@ -300,8 +327,8 @@ const EMPLOYEES = [
   { name: "Chul(Everlabs)", nums: [27, 28, 29, 30, 31, 32] },
   { name: "Kim(Everlabs)", nums: [37, 38, 39, 40, 41, 42] },
   { name: "Louis", nums: [1, 6, 11, 16, 24, 27] },
-  { name: "JC", nums: [0, 0, 0, 0, 0, 0] },   // TODO: 未提供號碼，請改
-  { name: "Kico", nums: [0, 0, 0, 0, 0, 0] }, // TODO: 未提供號碼，請改
+  { name: "JC", nums: [0, 0, 0, 0, 0, 0] },    // TODO
+  { name: "Kico", nums: [0, 0, 0, 0, 0, 0] },  // TODO
 ];
 
 const MAX_NUM = 60;
@@ -336,7 +363,7 @@ document.getElementById("btnFullscreen").addEventListener("click", () => {
 
 elToggleAll.addEventListener("click", () => {
   state.showAll = !state.showAll;
-  elToggleAll.textContent = state.showAll ? "只顯示中獎" : "顯示全部（包含未中）";
+  elToggleAll.textContent = state.showAll ? "只顯示有中獎者" : "顯示全部（包含未中）";
   renderTable();
 });
 
@@ -363,6 +390,18 @@ function initDrawSelect() {
   elSelectDraw.innerHTML = "";
   elSelectDraw.appendChild(buildOptions());
   elSelectDraw.value = "1";
+}
+
+function redPacketsForHitCount(hitCount) {
+  switch (hitCount) {
+    case 1: return 1;
+    case 2: return 2;
+    case 3: return 3;
+    case 4: return 5;
+    case 5: return 10;
+    case 6: return 20;
+    default: return 0;
+  }
 }
 
 function addDrawFromSelect() {
@@ -422,13 +461,18 @@ function renderHistory() {
 
 function renderTable() {
   const rows = state.people
-    .map(p => ({
-      name: p.name,
-      hitCount: p.hitSet.size,
-      hits: Array.from(p.hitSet).sort((a,b)=>a-b),
-    }))
+    .map(p => {
+      const hitCount = p.hitSet.size;
+      return {
+        name: p.name,
+        hitCount,
+        packets: redPacketsForHitCount(hitCount),
+        hits: Array.from(p.hitSet).sort((a,b)=>a-b),
+      };
+    })
     .filter(r => state.showAll ? true : r.hitCount > 0)
     .sort((a,b) => {
+      if (b.packets !== a.packets) return b.packets - a.packets;
       if (b.hitCount !== a.hitCount) return b.hitCount - a.hitCount;
       return a.name.localeCompare(b.name, "zh-Hant");
     });
@@ -445,6 +489,18 @@ function renderTable() {
 
     const tdCount = document.createElement("td");
     tdCount.innerHTML = `<span class="count">${r.hitCount}</span>`;
+
+    const tdPackets = document.createElement("td");
+    if (r.packets <= 0) {
+      tdPackets.innerHTML = `<span class="rpZero">—</span>`;
+    } else {
+      tdPackets.innerHTML = `
+        <span class="rpBadge">
+          <span class="n">${r.packets}</span>
+          <span class="t">封</span>
+        </span>
+      `;
+    }
 
     const tdHits = document.createElement("td");
     const hitsWrap = document.createElement("div");
@@ -491,6 +547,7 @@ function renderTable() {
     tr.appendChild(tdRank);
     tr.appendChild(tdName);
     tr.appendChild(tdCount);
+    tr.appendChild(tdPackets);
     tr.appendChild(tdHits);
     tr.appendChild(tdNums);
 
@@ -542,7 +599,7 @@ function resetAll() {
     hitSet: new Set(),
   }));
   state.showAll = false;
-  elToggleAll.textContent = "顯示全部員工（包含未中）";
+  elToggleAll.textContent = "顯示全部（包含未中）";
 
   elLast.textContent = "—";
   elHitList.innerHTML = `<li class="hint">未有攪出號碼</li>`;
@@ -567,4 +624,3 @@ renderTable();
 </script>
 </body>
 </html>
-
