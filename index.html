@@ -1,14 +1,14 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Annual Dinner 抽獎</title>
+  <title>Annual Dinner Lucky Draw</title>
   <style>
     :root { --bg:#0b0f19; --card:#111827; --text:#e5e7eb; --muted:#9ca3af; --line:#243041; }
     * { box-sizing: border-box; }
     body {
-      margin: 0; font-family: system-ui, -apple-system, "PingFang HK", "Noto Sans TC", sans-serif;
+      margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
       background: var(--bg); color: var(--text);
     }
     header {
@@ -16,7 +16,7 @@
       display:flex; gap:12px; align-items:center; justify-content:space-between;
     }
     header .title { font-weight: 900; letter-spacing: .5px; }
-    header .controls { display:flex; gap:10px; flex-wrap: wrap; }
+    header .controls { display:flex; gap:10px; flex-wrap: wrap; align-items:center; }
 
     button {
       background: #1f2937; color: var(--text);
@@ -25,10 +25,11 @@
     }
     button:hover { filter: brightness(1.08); }
     button.danger { border-color:#7f1d1d; background:#3f0d0d; }
+    button.primary { border-color:#2563eb; background:#0b1b3f; }
+    button:disabled { opacity: .6; cursor: not-allowed; }
 
     main { padding: 16px; }
 
-    /* Layout: Left narrower, Right wider */
     .layout {
       display:grid;
       grid-template-columns: .78fr 1.22fr;
@@ -50,7 +51,6 @@
     .label { color: var(--muted); font-size: 13px; margin-bottom: 10px; font-weight: 900; letter-spacing: .2px; }
     .hint { color: var(--muted); font-size: 13px; font-weight: 650; }
 
-    /* Select base */
     select {
       border-radius: 14px;
       border: 1px solid #374151;
@@ -60,7 +60,6 @@
       outline: none;
     }
 
-    /* Left panel (draw) */
     .center {
       display:flex; flex-direction:column; align-items:center; justify-content:center;
       text-align:center;
@@ -74,7 +73,6 @@
       text-align-last: center;
     }
 
-    /* ✅ Bigger latest drawn number for projector */
     .bigNumber {
       font-size: clamp(120px, 18vw, 260px);
       line-height: 1;
@@ -110,7 +108,6 @@
       text-align:center;
     }
 
-    /* Right panel (table) */
     .tableTopRow { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
     .pill {
       display:inline-flex; align-items:center; gap:8px;
@@ -182,24 +179,134 @@
     }
     .rpZero { color: var(--muted); font-weight: 900; }
 
-    @media (max-width: 900px) {
-      .badge { font-size: 18px; padding: 9px 12px; min-width: 50px; }
-      .drawSelect { width: 200px; }
-      .numEdit select { width: 54px; }
-      .empName { font-size: 17px; }
-      .rpBadge .n { font-size: 20px; }
-      .bigNumber { font-size: clamp(110px, 20vw, 240px); }
+    /* ===== Prize Wheel Modal (wheel + SPIN only) ===== */
+    .modalBack{
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.70);
+      display:none;
+      align-items:center; justify-content:center;
+      padding: 18px;
+      z-index: 9999;
+      overflow: auto;
+    }
+    .modalBack.show{ display:flex; }
+
+    .modal{
+      width: min(1400px, 98vw);
+      max-height: 94vh;
+      margin: 2vh 0;
+      background: #0d1322;
+      border: 1px solid #2a3a56;
+      border-radius: 18px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.55);
+      overflow: visible;
+      position: relative;
+      padding: 16px;
+    }
+
+    .closeX{
+      position: absolute;
+      top: 10px; right: 10px;
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      border: 1px solid #374151;
+      background: #0b1220;
+      color: var(--text);
+      font-weight: 950;
+      cursor: pointer;
+    }
+    .closeX:hover{ filter: brightness(1.08); }
+
+    .wheelOnlyWrap{
+      display:flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: 10px 8px;
+    }
+    @media (max-width: 980px){
+      .wheelOnlyWrap{ flex-direction: column; }
+    }
+
+    .wheelStage{
+      position: relative;
+      width: min(760px, 72vmin);
+      aspect-ratio: 1/1;
+      display:flex; align-items:center; justify-content:center;
+      flex: 0 0 auto;
+    }
+
+    canvas#wheelCanvas{
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 1px solid #2a3a56;
+      background: #0b1220;
+      display:block;
+    }
+
+    .pointer{
+      position:absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-bottom: 32px solid #e5e7eb;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.55));
+      z-index: 2;
+    }
+
+    .topName{
+      position:absolute;
+      top: -78px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 16px;
+      border-radius: 14px;
+      border: 1px solid #2a3a56;
+      background: rgba(15, 23, 42, 0.92);
+      font-weight: 950;
+      font-size: clamp(26px, 3.6vw, 56px);
+      letter-spacing: .2px;
+      max-width: 94%;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-shadow: 0 14px 40px rgba(0,0,0,.45);
+      z-index: 3;
+    }
+
+    .spinSide{
+      display:flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+      min-width: 220px;
+    }
+    .spinBtn{
+      padding: 16px 18px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 950;
+      letter-spacing: .4px;
+      min-width: 220px;
     }
   </style>
 </head>
 
 <body>
   <header>
-    <div class="title">🎱 Annual Dinner 抽獎</div>
+    <div class="title">🎱 Annual Dinner Lucky Draw</div>
     <div class="controls">
+      <button class="primary" id="btnWheel">Prize Wheel</button>
       <button id="btnFullscreen">Fullscreen</button>
-      <button id="btnUndo">Undo 上一個</button>
-      <button class="danger" id="btnReset">Reset 全部</button>
+      <button id="btnUndo">Undo Last</button>
+      <button class="danger" id="btnReset">Reset All</button>
     </div>
   </header>
 
@@ -207,27 +314,27 @@
     <div class="layout">
       <!-- LEFT: Draw -->
       <section class="card center">
-        <div class="label">選擇攪出號碼</div>
+        <div class="label">Select a drawn number</div>
         <div class="inputRow">
           <select id="selectDraw" class="drawSelect"></select>
-          <button id="btnAdd">加入</button>
-          <span class="hint">（下拉：1–60）</span>
+          <button id="btnAdd">Add</button>
+          <span class="hint">(Dropdown: 1–60)</span>
         </div>
 
         <div style="height:12px"></div>
 
-        <div class="label">最新攪出號碼</div>
+        <div class="label">Latest drawn number</div>
         <div class="bigNumber" id="lastNumber">—</div>
 
         <div class="hitBox">
-          <div class="label" style="margin-bottom:8px;">＊＊今輪中獎者＊＊</div>
+          <div class="label" style="margin-bottom:8px;">*** Winners in this round ***</div>
           <ul class="hitList" id="hitList">
-            <li class="hint">未有攪出號碼</li>
+            <li class="hint">No number drawn yet</li>
           </ul>
         </div>
 
         <div class="historyWrap">
-          <div class="label" style="margin-top:14px;">攪珠歷史（按次序）</div>
+          <div class="label" style="margin-top:14px;">Draw history (in order)</div>
           <div class="history" id="history"></div>
         </div>
       </section>
@@ -236,16 +343,16 @@
       <section class="card">
         <div class="tableTopRow">
           <div>
-            <div class="label" style="margin-bottom:6px;">累積結果</div>
-            <div class="pill">已攪出 <span id="drawnCount">0</span> 個</div>
+            <div class="label" style="margin-bottom:6px;">Cumulative results</div>
+            <div class="pill">Drawn: <span id="drawnCount">0</span></div>
           </div>
           <div class="controls" style="gap:10px;">
-            <button id="btnToggleAll">顯示全部（包含未中）</button>
+            <button id="btnToggleAll">Show All (incl. no hits)</button>
           </div>
         </div>
 
         <div class="smallNote">
-          規則（按「總命中數」計算，不累加）：1→1｜2→2｜3→3｜4→5｜5→10｜6→20
+          Rule (based on total hits, NOT cumulative): 1→1 ｜ 2→2 ｜ 3→3 ｜ 4→5 ｜ 5→10 ｜ 6→20
         </div>
 
         <div style="overflow:auto; margin-top: 10px;">
@@ -253,11 +360,11 @@
             <thead>
               <tr>
                 <th style="width:48px;">#</th>
-                <th style="min-width:170px;">名字</th>
-                <th style="width:90px;">命中</th>
-                <th style="width:140px;">可抽利是</th>
-                <th style="min-width:220px;">命中號碼</th>
-                <th style="min-width:320px;">自選號碼</th>
+                <th style="min-width:170px;">Name</th>
+                <th style="width:90px;">Hits</th>
+                <th style="width:160px;">Red Packets</th>
+                <th style="min-width:220px;">Hit numbers</th>
+                <th style="min-width:320px;">Chosen numbers</th>
               </tr>
             </thead>
             <tbody id="tbody"></tbody>
@@ -267,7 +374,28 @@
     </div>
   </main>
 
+  <!-- Prize Wheel Modal: ONLY wheel + spin -->
+  <div class="modalBack" id="wheelModalBack" role="dialog" aria-modal="true">
+    <div class="modal">
+      <button class="closeX" id="btnWheelClose" aria-label="Close">✕</button>
+
+      <div class="wheelOnlyWrap">
+        <div class="wheelStage">
+          <div class="topName" id="topName">—</div>
+          <div class="pointer"></div>
+          <canvas id="wheelCanvas" width="1600" height="1600"></canvas>
+        </div>
+
+        <div class="spinSide">
+          <!-- start -> turns into END SPIN while spinning -->
+          <button class="primary spinBtn" id="btnSpin">START SPIN</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script>
+/** ====== EMPLOYEES ====== */
 const EMPLOYEES = [
   { name: "Fai", nums: [1, 2, 3, 4, 5, 6] },
   { name: "Lily", nums: [11, 12, 13, 14, 15, 16] },
@@ -328,7 +456,7 @@ const EMPLOYEES = [
   { name: "Kim(Everlabs)", nums: [37, 38, 39, 40, 41, 42] },
   { name: "Louis", nums: [1, 6, 11, 16, 24, 27] },
   { name: "JC", nums: [0, 0, 0, 0, 0, 0] },    // TODO
-  { name: "Kico", nums: [0, 0, 0, 0, 0, 0] },  // TODO
+  { name: "Kico", nums: [0, 0, 0, 0, 0, 0] },  // excluded from wheel
 ];
 
 const MAX_NUM = 60;
@@ -344,7 +472,7 @@ const state = {
   })),
 };
 
-// DOM
+/* ===== DOM (main page) ===== */
 const elLast = document.getElementById("lastNumber");
 const elHitList = document.getElementById("hitList");
 const elHistory = document.getElementById("history");
@@ -363,10 +491,11 @@ document.getElementById("btnFullscreen").addEventListener("click", () => {
 
 elToggleAll.addEventListener("click", () => {
   state.showAll = !state.showAll;
-  elToggleAll.textContent = state.showAll ? "只顯示有中獎者" : "顯示全部（包含未中）";
+  elToggleAll.textContent = state.showAll ? "Show winners only" : "Show All (incl. no hits)";
   renderTable();
 });
 
+/* ===== Helpers (main) ===== */
 function expandToSlots(nums) {
   const out = Array(CHOSEN_SLOTS).fill(null);
   for (let i = 0; i < Math.min(nums.length, CHOSEN_SLOTS); i++) out[i] = nums[i];
@@ -404,6 +533,7 @@ function redPacketsForHitCount(hitCount) {
   }
 }
 
+/* ===== Main draw flow ===== */
 function addDrawFromSelect() {
   const n = Number(elSelectDraw.value);
   if (!isValidNum(n)) return;
@@ -431,17 +561,17 @@ function addDraw(n) {
 function renderHitList(hitNames, n) {
   elHitList.innerHTML = "";
   if (!state.drawn.length) {
-    elHitList.innerHTML = `<li class="hint">未有攪出號碼</li>`;
+    elHitList.innerHTML = `<li class="hint">No number drawn yet</li>`;
     return;
   }
   if (hitNames.length === 0) {
     const li = document.createElement("li");
     li.className = "hint";
-    li.textContent = `今次（${n}）無人中`;
+    li.textContent = `No winner for (${n})`;
     elHitList.appendChild(li);
     return;
   }
-  hitNames.sort((a,b)=>a.localeCompare(b, "zh-Hant"));
+  hitNames.sort((a,b)=>a.localeCompare(b, "en"));
   for (const name of hitNames) {
     const li = document.createElement("li");
     li.innerHTML = `<span style="font-weight:950;">${escapeHtml(name)}</span>`;
@@ -474,7 +604,7 @@ function renderTable() {
     .sort((a,b) => {
       if (b.packets !== a.packets) return b.packets - a.packets;
       if (b.hitCount !== a.hitCount) return b.hitCount - a.hitCount;
-      return a.name.localeCompare(b.name, "zh-Hant");
+      return a.name.localeCompare(b.name, "en");
     });
 
   elTbody.innerHTML = "";
@@ -497,7 +627,7 @@ function renderTable() {
       tdPackets.innerHTML = `
         <span class="rpBadge">
           <span class="n">${r.packets}</span>
-          <span class="t">封</span>
+          <span class="t">pcs</span>
         </span>
       `;
     }
@@ -574,7 +704,7 @@ function recomputeAllHits() {
     elLast.textContent = String(last);
   } else {
     elLast.textContent = "—";
-    elHitList.innerHTML = `<li class="hint">未有攪出號碼</li>`;
+    elHitList.innerHTML = `<li class="hint">No number drawn yet</li>`;
   }
 
   renderHistory();
@@ -589,7 +719,7 @@ function undoLast() {
 }
 
 function resetAll() {
-  const ok = confirm("確定要 Reset 全部？（會清除所有攪珠紀錄）");
+  const ok = confirm("Are you sure you want to reset everything? (This will clear all draw history)");
   if (!ok) return;
 
   state.drawn = [];
@@ -599,10 +729,10 @@ function resetAll() {
     hitSet: new Set(),
   }));
   state.showAll = false;
-  elToggleAll.textContent = "顯示全部（包含未中）";
+  elToggleAll.textContent = "Show All (incl. no hits)";
 
   elLast.textContent = "—";
-  elHitList.innerHTML = `<li class="hint">未有攪出號碼</li>`;
+  elHitList.innerHTML = `<li class="hint">No number drawn yet</li>`;
   renderHistory();
   renderTable();
   elDrawnCount.textContent = "0";
@@ -617,10 +747,369 @@ function escapeHtml(s) {
     .replaceAll("'","&#039;");
 }
 
-// init
+/* =========================================================
+   Prize Wheel (CONTINUOUS SPIN + END SPIN TO SLOW STOP)
+========================================================= */
+const wheelModalBack = document.getElementById("wheelModalBack");
+const btnWheel = document.getElementById("btnWheel");
+const btnWheelClose = document.getElementById("btnWheelClose");
+const btnSpin = document.getElementById("btnSpin");
+const wheelCanvas = document.getElementById("wheelCanvas");
+const elTopName = document.getElementById("topName");
+const wctx = wheelCanvas.getContext("2d");
+
+const wheelState = {
+  namesPool: [],
+  angle: 0,
+
+  // modes: "idle" | "free" | "stopping"
+  mode: "idle",
+
+  // free spin dynamics
+  omega: 0,          // rad/ms
+  omegaTarget: 0,    // rad/ms
+  lastTs: 0,
+
+  // stopping animation
+  stopStartAngle: 0,
+  stopTargetAngle: 0,
+  stopStartTime: 0,
+  stopDurationMs: 0,
+};
+
+// Offscreen static render (smooth)
+let wheelStaticCanvas = null;
+let wheelStaticCtx = null;
+let wheelStaticDirty = true;
+
+function buildWheelNamesFromEmployees() {
+  const seen = new Set();
+  const out = [];
+  for (const p of EMPLOYEES) {
+    const nm = String(p.name ?? "").trim();
+    if (!nm) continue;
+    if (nm.toLowerCase() === "kico") continue; // exclude Kico
+    if (seen.has(nm)) continue;
+    seen.add(nm);
+    out.push(nm);
+  }
+  out.sort((a,b)=>a.localeCompare(b, "en"));
+  return out;
+}
+
+function getWinnerIndexAtAngle(angle, N) {
+  const pointerAngle = -Math.PI/2; // top
+  let a = pointerAngle - angle;
+  a = ((a % (Math.PI*2)) + (Math.PI*2)) % (Math.PI*2);
+  const slice = (Math.PI*2)/N;
+  return Math.floor(a / slice);
+}
+
+function updateTopName() {
+  const names = wheelState.namesPool;
+  if (!names.length) { elTopName.textContent = "—"; return; }
+  const idx = getWinnerIndexAtAngle(wheelState.angle, names.length);
+  elTopName.textContent = names[idx] ?? "—";
+}
+
+function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+
+// Static render once
+function renderWheelStatic() {
+  const names = wheelState.namesPool;
+  const N = names.length;
+
+  if (!wheelStaticCanvas) {
+    wheelStaticCanvas = document.createElement("canvas");
+    wheelStaticCanvas.width = wheelCanvas.width;
+    wheelStaticCanvas.height = wheelCanvas.height;
+    wheelStaticCtx = wheelStaticCanvas.getContext("2d");
+  }
+
+  const ctx = wheelStaticCtx;
+  const cw = wheelStaticCanvas.width;
+  const ch = wheelStaticCanvas.height;
+  const cx = cw / 2, cy = ch / 2;
+  const R = Math.min(cx, cy) * 0.955;
+  const capR = R * 0.14;
+
+  ctx.clearRect(0, 0, cw, ch);
+
+  ctx.save();
+  ctx.translate(cx, cy);
+
+  // Outer circle
+  ctx.beginPath();
+  ctx.arc(0, 0, R, 0, Math.PI * 2);
+  ctx.fillStyle = "#0b1220";
+  ctx.fill();
+  ctx.lineWidth = 10;
+  ctx.strokeStyle = "#2a3a56";
+  ctx.stroke();
+
+  if (N === 0) {
+    ctx.fillStyle = "#9ca3af";
+    ctx.font = "950 72px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("No names", 0, 0);
+    ctx.restore();
+    wheelStaticDirty = false;
+    return;
+  }
+
+  // Clip to circle
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(0, 0, R * 0.965, 0, Math.PI * 2);
+  ctx.clip();
+
+  const slice = (Math.PI * 2) / N;
+
+  for (let i = 0; i < N; i++) {
+    const start = i * slice;
+    const end = start + slice;
+
+    // slice
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.arc(0, 0, R, start, end);
+    ctx.closePath();
+    ctx.fillStyle = (i % 2 === 0) ? "#0f172a" : "#111827";
+    ctx.fill();
+    ctx.strokeStyle = "#243041";
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // Text (always inward, never outside)
+    ctx.save();
+
+    const mid = (start + end) / 2;
+    ctx.rotate(mid);
+
+    const rAnchor = R * 0.955;
+    ctx.translate(rAnchor, 0);
+
+    const flip = (mid > Math.PI/2 && mid < Math.PI*1.5);
+    if (flip) ctx.rotate(Math.PI);
+
+    ctx.textAlign = flip ? "left" : "right";
+    ctx.textBaseline = "middle";
+
+    const baseFs = 92;
+    const fs = Math.max(34, baseFs - N * 0.55);
+    ctx.font = `950 ${fs}px system-ui, -apple-system, Segoe UI, Roboto, Arial`;
+
+    const txt = names[i] ?? "";
+    const margin = R * 0.03;
+    const maxOneThird = R * 0.34;
+    const maxSafe = rAnchor - capR - margin;
+    const inwardSpace = Math.max(0, Math.min(maxOneThird, maxSafe));
+
+    const m = ctx.measureText(txt);
+    let sx = 1;
+    if (m.width > inwardSpace && inwardSpace > 0) sx = inwardSpace / m.width;
+
+    ctx.scale(sx, 1);
+
+    ctx.shadowColor = "rgba(0,0,0,0.55)";
+    ctx.shadowBlur = 10;
+
+    ctx.lineWidth = 14;
+    ctx.strokeStyle = "rgba(0,0,0,0.85)";
+    ctx.strokeText(txt, 0, 0);
+
+    ctx.fillStyle = "#e5e7eb";
+    ctx.fillText(txt, 0, 0);
+
+    ctx.restore();
+  }
+
+  ctx.restore(); // end clip
+
+  // Center cap
+  ctx.beginPath();
+  ctx.arc(0, 0, capR, 0, Math.PI * 2);
+  ctx.fillStyle = "#0b1220";
+  ctx.fill();
+  ctx.strokeStyle = "#2a3a56";
+  ctx.lineWidth = 6;
+  ctx.stroke();
+
+  ctx.restore();
+
+  wheelStaticDirty = false;
+}
+
+function drawWheel() {
+  if (wheelStaticDirty) renderWheelStatic();
+
+  const cw = wheelCanvas.width;
+  const ch = wheelCanvas.height;
+  const cx = cw/2, cy = ch/2;
+
+  wctx.clearRect(0, 0, cw, ch);
+
+  wctx.save();
+  wctx.translate(cx, cy);
+  wctx.rotate(wheelState.angle);
+  wctx.drawImage(wheelStaticCanvas, -cx, -cy);
+  wctx.restore();
+
+  updateTopName();
+}
+
+function resetWheelPool() {
+  wheelState.namesPool = buildWheelNamesFromEmployees();
+  wheelState.angle = 0;
+
+  wheelState.mode = "idle";
+  wheelState.omega = 0;
+  wheelState.omegaTarget = 0;
+  wheelState.lastTs = 0;
+
+  wheelState.stopStartAngle = 0;
+  wheelState.stopTargetAngle = 0;
+  wheelState.stopStartTime = 0;
+  wheelState.stopDurationMs = 0;
+
+  btnSpin.disabled = false;
+  btnSpin.textContent = "START SPIN";
+
+  wheelStaticDirty = true;
+  drawWheel();
+}
+
+/* ===== Continuous spin (START) ===== */
+function startSpinForever() {
+  if (!wheelState.namesPool.length) return;
+  if (wheelState.mode !== "idle") return;
+
+  wheelState.mode = "free";
+  btnSpin.textContent = "END SPIN";
+  btnSpin.disabled = false;
+
+  // target angular speed: ~2.8–3.8 rotations/sec (tunable)
+  const rps = 2.8 + Math.random() * 1.0;
+  wheelState.omegaTarget = (Math.PI * 2 * rps) / 1000; // rad/ms
+
+  // start from a smaller speed then ramp up (feels smooth)
+  wheelState.omega = wheelState.omegaTarget * 0.25;
+  wheelState.lastTs = performance.now();
+
+  requestAnimationFrame(tickFreeSpin);
+}
+
+function tickFreeSpin(ts) {
+  if (wheelState.mode !== "free") return;
+
+  const dt = Math.min(40, Math.max(0, ts - wheelState.lastTs)); // clamp dt
+  wheelState.lastTs = ts;
+
+  // smooth ramp to omegaTarget
+  const k = 0.08; // smoothing factor
+  wheelState.omega += (wheelState.omegaTarget - wheelState.omega) * k;
+
+  wheelState.angle += wheelState.omega * dt;
+
+  // keep angle bounded
+  wheelState.angle = wheelState.angle % (Math.PI * 2);
+
+  drawWheel();
+  requestAnimationFrame(tickFreeSpin);
+}
+
+/* ===== End spin (choose winner, slow stop) ===== */
+function endSpinAndStop() {
+  if (wheelState.mode !== "free") return;
+  const names = wheelState.namesPool;
+  const N = names.length;
+  if (!N) return;
+
+  wheelState.mode = "stopping";
+  btnSpin.disabled = true; // prevent double click during decel
+
+  const slice = (Math.PI * 2) / N;
+  const winnerIdx = Math.floor(Math.random() * N);
+
+  const pointerAngle = -Math.PI/2;
+  const offset = (Math.random() * 0.75 + 0.1) * slice;
+
+  // Base angle that would place winner under pointer
+  const base = pointerAngle - (winnerIdx * slice + offset);
+
+  // ensure at least 3 full spins from current angle
+  const current = wheelState.angle;
+  const minSpins = 3;
+  const twoPi = Math.PI * 2;
+
+  const k = Math.ceil((current + minSpins * twoPi - base) / twoPi);
+  const target = base + k * twoPi;
+
+  wheelState.stopStartAngle = current;
+  wheelState.stopTargetAngle = target;
+  wheelState.stopStartTime = performance.now();
+  wheelState.stopDurationMs = 3200 + Math.random() * 1200; // slow stop duration
+
+  requestAnimationFrame(tickStopSpin);
+}
+
+function tickStopSpin(ts) {
+  if (wheelState.mode !== "stopping") return;
+
+  const t = (ts - wheelState.stopStartTime) / wheelState.stopDurationMs;
+  const clamped = Math.min(1, Math.max(0, t));
+  const eased = easeOutCubic(clamped);
+
+  wheelState.angle = wheelState.stopStartAngle + (wheelState.stopTargetAngle - wheelState.stopStartAngle) * eased;
+  drawWheel();
+
+  if (clamped < 1) {
+    requestAnimationFrame(tickStopSpin);
+    return;
+  }
+
+  // finalize
+  wheelState.angle = wheelState.stopTargetAngle % (Math.PI * 2);
+  drawWheel();
+
+  wheelState.mode = "idle";
+  btnSpin.disabled = false;
+  btnSpin.textContent = "START SPIN";
+}
+
+/* ===== Button behavior (toggle) ===== */
+btnSpin.addEventListener("click", () => {
+  if (wheelState.mode === "idle") startSpinForever();
+  else if (wheelState.mode === "free") endSpinAndStop();
+});
+
+/* Modal open/close */
+btnWheel.addEventListener("click", () => {
+  wheelModalBack.classList.add("show");
+  if (wheelState.namesPool.length === 0) resetWheelPool();
+  drawWheel();
+});
+
+btnWheelClose.addEventListener("click", () => {
+  wheelModalBack.classList.remove("show");
+});
+
+wheelModalBack.addEventListener("click", (e) => {
+  if (e.target === wheelModalBack) wheelModalBack.classList.remove("show");
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && wheelModalBack.classList.contains("show")) {
+    wheelModalBack.classList.remove("show");
+  }
+});
+
+/* init */
 initDrawSelect();
 renderHistory();
 renderTable();
+resetWheelPool();
 </script>
 </body>
 </html>
