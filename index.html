@@ -17,7 +17,6 @@
     }
     header .title { font-weight: 900; letter-spacing: .5px; }
     header .controls { display:flex; gap:10px; flex-wrap: wrap; align-items:center; }
-
     button {
       background: #1f2937; color: var(--text);
       border: 1px solid #374151; border-radius: 10px;
@@ -27,9 +26,7 @@
     button.danger { border-color:#7f1d1d; background:#3f0d0d; }
     button.primary { border-color:#2563eb; background:#0b1b3f; }
     button:disabled { opacity: .6; cursor: not-allowed; }
-
     main { padding: 16px; }
-
     .layout {
       display:grid;
       grid-template-columns: .78fr 1.22fr;
@@ -39,7 +36,6 @@
     @media (max-width: 1100px) {
       .layout { grid-template-columns: 1fr; }
     }
-
     .card {
       background: var(--card);
       border: 1px solid var(--line);
@@ -47,10 +43,8 @@
       padding: 16px;
       box-shadow: 0 10px 30px rgba(0,0,0,.25);
     }
-
     .label { color: var(--muted); font-size: 13px; margin-bottom: 10px; font-weight: 900; letter-spacing: .2px; }
     .hint { color: var(--muted); font-size: 13px; font-weight: 650; }
-
     select {
       border-radius: 14px;
       border: 1px solid #374151;
@@ -59,20 +53,17 @@
       font-weight: 900;
       outline: none;
     }
-
     .center {
       display:flex; flex-direction:column; align-items:center; justify-content:center;
       text-align:center;
     }
     .inputRow { display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap; }
-
     .drawSelect {
       width: 210px;
       padding: 12px 12px;
       font-size: 18px;
       text-align-last: center;
     }
-
     .bigNumber {
       font-size: clamp(120px, 18vw, 260px);
       line-height: 1;
@@ -80,7 +71,6 @@
       letter-spacing: 2px;
       margin: 14px 0 10px;
     }
-
     .hitBox {
       width: min(740px, 96%);
       margin-top: 10px;
@@ -91,7 +81,6 @@
       text-align:left;
     }
     .hitList { margin: 0; padding-left: 18px; display:grid; gap: 6px; }
-
     .historyWrap { width: min(820px, 98%); margin-top: 12px; }
     .history {
       display:flex; flex-wrap:wrap; gap:10px;
@@ -107,7 +96,6 @@
       min-width: 56px;
       text-align:center;
     }
-
     .tableTopRow { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
     .pill {
       display:inline-flex; align-items:center; gap:8px;
@@ -116,14 +104,11 @@
       font-weight: 900;
     }
     .smallNote { color: var(--muted); font-size: 12px; margin-top: 6px; }
-
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align:left; vertical-align: top; }
     th { color: var(--muted); font-size: 13px; font-weight: 950; }
     td { font-size: 14px; }
-
     .count { font-size: 22px; font-weight: 950; }
-
     .hits { display:flex; flex-wrap:wrap; gap:6px; }
     .hitNum {
       padding: 4px 8px;
@@ -132,13 +117,11 @@
       background:#0f172a;
       font-weight: 950;
     }
-
     .empName {
       font-size: 18px;
       font-weight: 950;
       letter-spacing: .2px;
     }
-
     .numEdit {
       display:flex; flex-wrap:wrap; gap:6px;
       align-items:center;
@@ -150,14 +133,12 @@
       text-align-last: center;
       border-radius: 10px;
       background: #0b1220;
-
       appearance: none;
       -webkit-appearance: none;
       -moz-appearance: none;
       background-image: none !important;
     }
     .numEdit select::-ms-expand { display: none; }
-
     .rpBadge {
       display:inline-flex;
       align-items:baseline;
@@ -178,8 +159,7 @@
       letter-spacing: .6px;
     }
     .rpZero { color: var(--muted); font-weight: 900; }
-
-    /* ===== Prize Wheel Modal (wheel + SPIN only) ===== */
+    /* ===== Prize Wheel Modal ===== */
     .modalBack{
       position: fixed; inset: 0;
       background: rgba(0,0,0,.70);
@@ -190,7 +170,6 @@
       overflow: auto;
     }
     .modalBack.show{ display:flex; }
-
     .modal{
       width: min(1400px, 98vw);
       max-height: 94vh;
@@ -203,7 +182,6 @@
       position: relative;
       padding: 16px;
     }
-
     .closeX{
       position: absolute;
       top: 10px; right: 10px;
@@ -216,7 +194,6 @@
       cursor: pointer;
     }
     .closeX:hover{ filter: brightness(1.08); }
-
     .wheelOnlyWrap{
       display:flex;
       flex-direction: row;
@@ -228,7 +205,6 @@
     @media (max-width: 980px){
       .wheelOnlyWrap{ flex-direction: column; }
     }
-
     .wheelStage{
       position: relative;
       width: min(760px, 72vmin);
@@ -236,7 +212,6 @@
       display:flex; align-items:center; justify-content:center;
       flex: 0 0 auto;
     }
-
     canvas#wheelCanvas{
       width: 100%;
       height: 100%;
@@ -245,7 +220,6 @@
       background: #0b1220;
       display:block;
     }
-
     .pointer{
       position:absolute;
       top: -10px;
@@ -258,7 +232,6 @@
       filter: drop-shadow(0 6px 10px rgba(0,0,0,.55));
       z-index: 2;
     }
-
     .topName{
       position:absolute;
       top: -78px;
@@ -279,7 +252,6 @@
       box-shadow: 0 14px 40px rgba(0,0,0,.45);
       z-index: 3;
     }
-
     .spinSide{
       display:flex;
       flex-direction: column;
@@ -298,7 +270,6 @@
     }
   </style>
 </head>
-
 <body>
   <header>
     <div class="title">🎱 Annual Dinner Lucky Draw</div>
@@ -309,7 +280,6 @@
       <button class="danger" id="btnReset">Reset All</button>
     </div>
   </header>
-
   <main>
     <div class="layout">
       <!-- LEFT: Draw -->
@@ -320,25 +290,20 @@
           <button id="btnAdd">Add</button>
           <span class="hint">(Dropdown: 1–60)</span>
         </div>
-
         <div style="height:12px"></div>
-
         <div class="label">Latest drawn number</div>
         <div class="bigNumber" id="lastNumber">—</div>
-
         <div class="hitBox">
           <div class="label" style="margin-bottom:8px;">*** Winners in this round ***</div>
           <ul class="hitList" id="hitList">
             <li class="hint">No number drawn yet</li>
           </ul>
         </div>
-
         <div class="historyWrap">
           <div class="label" style="margin-top:14px;">Draw history (in order)</div>
           <div class="history" id="history"></div>
         </div>
       </section>
-
       <!-- RIGHT: Table -->
       <section class="card">
         <div class="tableTopRow">
@@ -350,11 +315,9 @@
             <button id="btnToggleAll">Show All (incl. no hits)</button>
           </div>
         </div>
-
         <div class="smallNote">
           Rule (based on total hits, NOT cumulative): 1→1 ｜ 2→2 ｜ 3→3 ｜ 4→5 ｜ 5→10 ｜ 6→20
         </div>
-
         <div style="overflow:auto; margin-top: 10px;">
           <table>
             <thead>
@@ -373,21 +336,17 @@
       </section>
     </div>
   </main>
-
-  <!-- Prize Wheel Modal: ONLY wheel + spin -->
+  <!-- Prize Wheel Modal -->
   <div class="modalBack" id="wheelModalBack" role="dialog" aria-modal="true">
     <div class="modal">
       <button class="closeX" id="btnWheelClose" aria-label="Close">✕</button>
-
       <div class="wheelOnlyWrap">
         <div class="wheelStage">
           <div class="topName" id="topName">—</div>
           <div class="pointer"></div>
           <canvas id="wheelCanvas" width="1600" height="1600"></canvas>
         </div>
-
         <div class="spinSide">
-          <!-- start -> turns into END SPIN while spinning -->
           <button class="primary spinBtn" id="btnSpin">START SPIN</button>
         </div>
       </div>
@@ -455,13 +414,11 @@ const EMPLOYEES = [
   { name: "Chul(Everlabs)", nums: [27, 28, 29, 30, 31, 32] },
   { name: "Kim(Everlabs)", nums: [37, 38, 39, 40, 41, 42] },
   { name: "Louis", nums: [1, 6, 11, 16, 24, 27] },
-  { name: "Joy", nums: [7, 9, 15, 28, 37, 41] },    // TODO
-  { name: "Kico", nums: [7, 11, 12, 27, 35, 46] },  // excluded from wheel
+  { name: "Joy", nums: [7, 9, 15, 28, 37, 41] },
+  { name: "Kico", nums: [7, 11, 12, 27, 35, 46] },
 ];
-
 const MAX_NUM = 60;
 const CHOSEN_SLOTS = 6;
-
 const state = {
   drawn: [],
   showAll: false,
@@ -480,7 +437,6 @@ const elTbody = document.getElementById("tbody");
 const elDrawnCount = document.getElementById("drawnCount");
 const elToggleAll = document.getElementById("btnToggleAll");
 const elSelectDraw = document.getElementById("selectDraw");
-
 document.getElementById("btnAdd").addEventListener("click", addDrawFromSelect);
 document.getElementById("btnUndo").addEventListener("click", undoLast);
 document.getElementById("btnReset").addEventListener("click", resetAll);
@@ -488,7 +444,6 @@ document.getElementById("btnFullscreen").addEventListener("click", () => {
   if (!document.fullscreenElement) document.documentElement.requestFullscreen();
   else document.exitFullscreen();
 });
-
 elToggleAll.addEventListener("click", () => {
   state.showAll = !state.showAll;
   elToggleAll.textContent = state.showAll ? "Show winners only" : "Show All (incl. no hits)";
@@ -503,7 +458,6 @@ function expandToSlots(nums) {
 }
 function isValidNum(n) { return Number.isFinite(n) && n >= 1 && n <= MAX_NUM; }
 function getActiveNums(person) { return person.nums.filter(isValidNum); }
-
 function buildOptions() {
   const frag = document.createDocumentFragment();
   for (let i = 1; i <= MAX_NUM; i++) {
@@ -514,13 +468,11 @@ function buildOptions() {
   }
   return frag;
 }
-
 function initDrawSelect() {
   elSelectDraw.innerHTML = "";
   elSelectDraw.appendChild(buildOptions());
   elSelectDraw.value = "1";
 }
-
 function redPacketsForHitCount(hitCount) {
   switch (hitCount) {
     case 1: return 1;
@@ -539,11 +491,9 @@ function addDrawFromSelect() {
   if (!isValidNum(n)) return;
   addDraw(n);
 }
-
 function addDraw(n) {
   state.drawn.push(n);
   elLast.textContent = String(n);
-
   const hitNames = [];
   for (const person of state.people) {
     if (getActiveNums(person).includes(n)) {
@@ -551,13 +501,11 @@ function addDraw(n) {
       hitNames.push(person.name);
     }
   }
-
   renderHitList(hitNames, n);
   renderHistory();
   renderTable();
   elDrawnCount.textContent = state.drawn.length;
 }
-
 function renderHitList(hitNames, n) {
   elHitList.innerHTML = "";
   if (!state.drawn.length) {
@@ -578,7 +526,6 @@ function renderHitList(hitNames, n) {
     elHitList.appendChild(li);
   }
 }
-
 function renderHistory() {
   elHistory.innerHTML = "";
   for (let i = 0; i < state.drawn.length; i++) {
@@ -588,7 +535,6 @@ function renderHistory() {
     elHistory.appendChild(b);
   }
 }
-
 function renderTable() {
   const rows = state.people
     .map(p => {
@@ -606,20 +552,15 @@ function renderTable() {
       if (b.hitCount !== a.hitCount) return b.hitCount - a.hitCount;
       return a.name.localeCompare(b.name, "en");
     });
-
   elTbody.innerHTML = "";
   rows.forEach((r, idx) => {
     const tr = document.createElement("tr");
-
     const tdRank = document.createElement("td");
     tdRank.textContent = String(idx + 1);
-
     const tdName = document.createElement("td");
     tdName.innerHTML = `<span class="empName">${escapeHtml(r.name)}</span>`;
-
     const tdCount = document.createElement("td");
     tdCount.innerHTML = `<span class="count">${r.hitCount}</span>`;
-
     const tdPackets = document.createElement("td");
     if (r.packets <= 0) {
       tdPackets.innerHTML = `<span class="rpZero">—</span>`;
@@ -631,7 +572,6 @@ function renderTable() {
         </span>
       `;
     }
-
     const tdHits = document.createElement("td");
     const hitsWrap = document.createElement("div");
     hitsWrap.className = "hits";
@@ -649,51 +589,39 @@ function renderTable() {
       });
     }
     tdHits.appendChild(hitsWrap);
-
     const tdNums = document.createElement("td");
     const wrap = document.createElement("div");
     wrap.className = "numEdit";
-
     const person = state.people.find(p => p.name === r.name);
-
     for (let i = 0; i < CHOSEN_SLOTS; i++) {
       const sel = document.createElement("select");
       sel.appendChild(buildOptions());
-
       const cur = person.nums[i];
       sel.value = isValidNum(cur) ? String(cur) : "1";
-
       sel.addEventListener("change", () => {
         const v = Number(sel.value);
         person.nums[i] = isValidNum(v) ? v : person.nums[i];
         recomputeAllHits();
       });
-
       wrap.appendChild(sel);
     }
-
     tdNums.appendChild(wrap);
-
     tr.appendChild(tdRank);
     tr.appendChild(tdName);
     tr.appendChild(tdCount);
     tr.appendChild(tdPackets);
     tr.appendChild(tdHits);
     tr.appendChild(tdNums);
-
     elTbody.appendChild(tr);
   });
 }
-
 function recomputeAllHits() {
   for (const p of state.people) p.hitSet = new Set();
-
   for (const n of state.drawn) {
     for (const p of state.people) {
       if (getActiveNums(p).includes(n)) p.hitSet.add(n);
     }
   }
-
   if (state.drawn.length) {
     const last = state.drawn[state.drawn.length - 1];
     const hitNames = [];
@@ -706,22 +634,18 @@ function recomputeAllHits() {
     elLast.textContent = "—";
     elHitList.innerHTML = `<li class="hint">No number drawn yet</li>`;
   }
-
   renderHistory();
   renderTable();
   elDrawnCount.textContent = state.drawn.length;
 }
-
 function undoLast() {
   if (state.drawn.length === 0) return;
   state.drawn.pop();
   recomputeAllHits();
 }
-
 function resetAll() {
   const ok = confirm("Are you sure you want to reset everything? (This will clear all draw history)");
   if (!ok) return;
-
   state.drawn = [];
   state.people = EMPLOYEES.map(p => ({
     name: p.name,
@@ -730,14 +654,12 @@ function resetAll() {
   }));
   state.showAll = false;
   elToggleAll.textContent = "Show All (incl. no hits)";
-
   elLast.textContent = "—";
   elHitList.innerHTML = `<li class="hint">No number drawn yet</li>`;
   renderHistory();
   renderTable();
   elDrawnCount.textContent = "0";
 }
-
 function escapeHtml(s) {
   return String(s)
     .replaceAll("&","&amp;")
@@ -748,7 +670,7 @@ function escapeHtml(s) {
 }
 
 /* =========================================================
-   Prize Wheel (CONTINUOUS SPIN + END SPIN TO SLOW STOP)
+   Prize Wheel (CONTINUOUS SPIN + LONGER SMOOTH SLOW STOP)
 ========================================================= */
 const wheelModalBack = document.getElementById("wheelModalBack");
 const btnWheel = document.getElementById("btnWheel");
@@ -757,27 +679,18 @@ const btnSpin = document.getElementById("btnSpin");
 const wheelCanvas = document.getElementById("wheelCanvas");
 const elTopName = document.getElementById("topName");
 const wctx = wheelCanvas.getContext("2d");
-
 const wheelState = {
   namesPool: [],
   angle: 0,
-
-  // modes: "idle" | "free" | "stopping"
   mode: "idle",
-
-  // free spin dynamics
-  omega: 0,          // rad/ms
-  omegaTarget: 0,    // rad/ms
+  omega: 0,
+  omegaTarget: 0,
   lastTs: 0,
-
-  // stopping animation
   stopStartAngle: 0,
   stopTargetAngle: 0,
   stopStartTime: 0,
   stopDurationMs: 0,
 };
-
-// Offscreen static render (smooth)
 let wheelStaticCanvas = null;
 let wheelStaticCtx = null;
 let wheelStaticDirty = true;
@@ -806,7 +719,7 @@ function buildWheelNamesFromEmployees() {
 }
 
 function getWinnerIndexAtAngle(angle, N) {
-  const pointerAngle = -Math.PI/2; // top
+  const pointerAngle = -Math.PI/2;
   let a = pointerAngle - angle;
   a = ((a % (Math.PI*2)) + (Math.PI*2)) % (Math.PI*2);
   const slice = (Math.PI*2)/N;
@@ -820,33 +733,29 @@ function updateTopName() {
   elTopName.textContent = names[idx] ?? "—";
 }
 
-function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+// 平順的強減速曲線（後段非常慢，但無過衝）
+function easeOutQuart(t) {
+  return 1 - Math.pow(1 - t, 4);
+}
 
-// Static render once
 function renderWheelStatic() {
   const names = wheelState.namesPool;
   const N = names.length;
-
   if (!wheelStaticCanvas) {
     wheelStaticCanvas = document.createElement("canvas");
     wheelStaticCanvas.width = wheelCanvas.width;
     wheelStaticCanvas.height = wheelCanvas.height;
     wheelStaticCtx = wheelStaticCanvas.getContext("2d");
   }
-
   const ctx = wheelStaticCtx;
   const cw = wheelStaticCanvas.width;
   const ch = wheelStaticCanvas.height;
   const cx = cw / 2, cy = ch / 2;
   const R = Math.min(cx, cy) * 0.955;
   const capR = R * 0.14;
-
   ctx.clearRect(0, 0, cw, ch);
-
   ctx.save();
   ctx.translate(cx, cy);
-
-  // Outer circle
   ctx.beginPath();
   ctx.arc(0, 0, R, 0, Math.PI * 2);
   ctx.fillStyle = "#0b1220";
@@ -854,7 +763,6 @@ function renderWheelStatic() {
   ctx.lineWidth = 10;
   ctx.strokeStyle = "#2a3a56";
   ctx.stroke();
-
   if (N === 0) {
     ctx.fillStyle = "#9ca3af";
     ctx.font = "950 72px system-ui, -apple-system, Segoe UI, Roboto, Arial";
@@ -865,20 +773,14 @@ function renderWheelStatic() {
     wheelStaticDirty = false;
     return;
   }
-
-  // Clip to circle
   ctx.save();
   ctx.beginPath();
   ctx.arc(0, 0, R * 0.965, 0, Math.PI * 2);
   ctx.clip();
-
   const slice = (Math.PI * 2) / N;
-
   for (let i = 0; i < N; i++) {
     const start = i * slice;
     const end = start + slice;
-
-    // slice
     ctx.beginPath();
     ctx.moveTo(0, 0);
     ctx.arc(0, 0, R, start, end);
@@ -888,54 +790,37 @@ function renderWheelStatic() {
     ctx.strokeStyle = "#243041";
     ctx.lineWidth = 2.5;
     ctx.stroke();
-
-    // Text (always inward, never outside)
     ctx.save();
-
     const mid = (start + end) / 2;
     ctx.rotate(mid);
-
     const rAnchor = R * 0.955;
     ctx.translate(rAnchor, 0);
-
     const flip = (mid > Math.PI/2 && mid < Math.PI*1.5);
     if (flip) ctx.rotate(Math.PI);
-
     ctx.textAlign = flip ? "left" : "right";
     ctx.textBaseline = "middle";
-
     const baseFs = 92;
     const fs = Math.max(34, baseFs - N * 0.55);
     ctx.font = `950 ${fs}px system-ui, -apple-system, Segoe UI, Roboto, Arial`;
-
     const txt = names[i] ?? "";
     const margin = R * 0.03;
     const maxOneThird = R * 0.34;
     const maxSafe = rAnchor - capR - margin;
     const inwardSpace = Math.max(0, Math.min(maxOneThird, maxSafe));
-
     const m = ctx.measureText(txt);
     let sx = 1;
     if (m.width > inwardSpace && inwardSpace > 0) sx = inwardSpace / m.width;
-
     ctx.scale(sx, 1);
-
     ctx.shadowColor = "rgba(0,0,0,0.55)";
     ctx.shadowBlur = 10;
-
     ctx.lineWidth = 14;
     ctx.strokeStyle = "rgba(0,0,0,0.85)";
     ctx.strokeText(txt, 0, 0);
-
     ctx.fillStyle = "#e5e7eb";
     ctx.fillText(txt, 0, 0);
-
     ctx.restore();
   }
-
-  ctx.restore(); // end clip
-
-  // Center cap
+  ctx.restore();
   ctx.beginPath();
   ctx.arc(0, 0, capR, 0, Math.PI * 2);
   ctx.fillStyle = "#0b1220";
@@ -943,156 +828,129 @@ function renderWheelStatic() {
   ctx.strokeStyle = "#2a3a56";
   ctx.lineWidth = 6;
   ctx.stroke();
-
   ctx.restore();
-
   wheelStaticDirty = false;
 }
 
 function drawWheel() {
   if (wheelStaticDirty) renderWheelStatic();
-
   const cw = wheelCanvas.width;
   const ch = wheelCanvas.height;
   const cx = cw/2, cy = ch/2;
-
   wctx.clearRect(0, 0, cw, ch);
-
   wctx.save();
   wctx.translate(cx, cy);
   wctx.rotate(wheelState.angle);
   wctx.drawImage(wheelStaticCanvas, -cx, -cy);
   wctx.restore();
-
   updateTopName();
 }
 
 function resetWheelPool() {
   wheelState.namesPool = buildWheelNamesFromEmployees();
   wheelState.angle = 0;
-
   wheelState.mode = "idle";
   wheelState.omega = 0;
   wheelState.omegaTarget = 0;
   wheelState.lastTs = 0;
-
   wheelState.stopStartAngle = 0;
   wheelState.stopTargetAngle = 0;
   wheelState.stopStartTime = 0;
   wheelState.stopDurationMs = 0;
-
   btnSpin.disabled = false;
   btnSpin.textContent = "START SPIN";
-
   wheelStaticDirty = true;
   drawWheel();
 }
 
-/* ===== Continuous spin (START) ===== */
+/* ===== Continuous spin ===== */
 function startSpinForever() {
   if (!wheelState.namesPool.length) return;
   if (wheelState.mode !== "idle") return;
-
   wheelState.mode = "free";
   btnSpin.textContent = "END SPIN";
   btnSpin.disabled = false;
-
-  // target angular speed: ~2.8–3.8 rotations/sec (tunable)
   const rps = 2.8 + Math.random() * 1.0;
-  wheelState.omegaTarget = (Math.PI * 2 * rps) / 1000; // rad/ms
-
-  // start from a smaller speed then ramp up (feels smooth)
+  wheelState.omegaTarget = (Math.PI * 2 * rps) / 1000;
   wheelState.omega = wheelState.omegaTarget * 0.25;
   wheelState.lastTs = performance.now();
-
   requestAnimationFrame(tickFreeSpin);
 }
 
 function tickFreeSpin(ts) {
   if (wheelState.mode !== "free") return;
-
-  const dt = Math.min(40, Math.max(0, ts - wheelState.lastTs)); // clamp dt
+  const dt = Math.min(40, Math.max(0, ts - wheelState.lastTs));
   wheelState.lastTs = ts;
-
-  // smooth ramp to omegaTarget
-  const k = 0.08; // smoothing factor
+  const k = 0.08;
   wheelState.omega += (wheelState.omegaTarget - wheelState.omega) * k;
-
   wheelState.angle += wheelState.omega * dt;
-
-  // keep angle bounded
   wheelState.angle = wheelState.angle % (Math.PI * 2);
-
   drawWheel();
   requestAnimationFrame(tickFreeSpin);
 }
 
-/* ===== End spin (choose winner, slow stop) ===== */
+/* ===== Longer smooth slow stop ===== */
 function endSpinAndStop() {
   if (wheelState.mode !== "free") return;
   const names = wheelState.namesPool;
   const N = names.length;
   if (!N) return;
-
   wheelState.mode = "stopping";
-  btnSpin.disabled = true; // prevent double click during decel
+  btnSpin.disabled = true;
 
   const slice = (Math.PI * 2) / N;
   const winnerIdx = Math.floor(Math.random() * N);
+  const pointerAngle = -Math.PI / 2;
+  const offset = (Math.random() * 0.8 + 0.1) * slice;
+  let baseTarget = pointerAngle - (winnerIdx * slice + offset);
 
-  const pointerAngle = -Math.PI/2;
-  const offset = (Math.random() * 0.75 + 0.1) * slice;
-
-  // Base angle that would place winner under pointer
-  const base = pointerAngle - (winnerIdx * slice + offset);
-
-  // ensure at least 3 full spins from current angle
-  const current = wheelState.angle;
-  const minSpins = 3;
+  // 至少再轉 5~8 圈（更長的滑動感）
+  const extraSpins = 5 + Math.floor(Math.random() * 4); // 5~8圈
   const twoPi = Math.PI * 2;
+  const spinsNeeded = Math.ceil((wheelState.angle - baseTarget + extraSpins * twoPi) / twoPi);
+  const finalTarget = baseTarget + spinsNeeded * twoPi;
 
-  const k = Math.ceil((current + minSpins * twoPi - base) / twoPi);
-  const target = base + k * twoPi;
-
-  wheelState.stopStartAngle = current;
-  wheelState.stopTargetAngle = target;
+  wheelState.stopStartAngle = wheelState.angle;
+  wheelState.stopTargetAngle = finalTarget;
   wheelState.stopStartTime = performance.now();
-  wheelState.stopDurationMs = 3200 + Math.random() * 1200; // slow stop duration
+
+  // 拉長停止時間：6 ~ 8.5 秒
+  wheelState.stopDurationMs = 9000 + Math.random() * 3500;
 
   requestAnimationFrame(tickStopSpin);
 }
 
 function tickStopSpin(ts) {
   if (wheelState.mode !== "stopping") return;
+  const elapsed = ts - wheelState.stopStartTime;
+  let t = elapsed / wheelState.stopDurationMs;
+  t = Math.min(1, Math.max(0, t));
 
-  const t = (ts - wheelState.stopStartTime) / wheelState.stopDurationMs;
-  const clamped = Math.min(1, Math.max(0, t));
-  const eased = easeOutCubic(clamped);
+  // 使用 easeOutQuart：後段減速非常明顯且平順
+  const eased = easeOutQuart(t);
 
-  wheelState.angle = wheelState.stopStartAngle + (wheelState.stopTargetAngle - wheelState.stopStartAngle) * eased;
+  wheelState.angle = wheelState.stopStartAngle +
+                     (wheelState.stopTargetAngle - wheelState.stopStartAngle) * eased;
+
   drawWheel();
 
-  if (clamped < 1) {
+  if (t < 1) {
     requestAnimationFrame(tickStopSpin);
-    return;
+  } else {
+    wheelState.angle = wheelState.stopTargetAngle % (Math.PI * 2);
+    drawWheel();
+    wheelState.mode = "idle";
+    btnSpin.disabled = false;
+    btnSpin.textContent = "START SPIN";
   }
-
-  // finalize
-  wheelState.angle = wheelState.stopTargetAngle % (Math.PI * 2);
-  drawWheel();
-
-  wheelState.mode = "idle";
-  btnSpin.disabled = false;
-  btnSpin.textContent = "START SPIN";
 }
 
-/* ===== Button behavior (toggle) ===== */
+/* ===== Button & Modal ===== */
 btnSpin.addEventListener("click", () => {
   if (wheelState.mode === "idle") startSpinForever();
   else if (wheelState.mode === "free") endSpinAndStop();
 });
 
-/* Modal open/close */
 btnWheel.addEventListener("click", () => {
   wheelModalBack.classList.add("show");
   if (wheelState.namesPool.length === 0) resetWheelPool();
@@ -1113,7 +971,7 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-/* init */
+/* ===== Init ===== */
 initDrawSelect();
 renderHistory();
 renderTable();
@@ -1121,7 +979,3 @@ resetWheelPool();
 </script>
 </body>
 </html>
-
-
-
-
