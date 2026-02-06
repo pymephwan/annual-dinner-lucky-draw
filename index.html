@@ -915,7 +915,7 @@ function endSpinAndStop() {
   wheelState.stopStartTime = performance.now();
 
   // 拉長停止時間：6 ~ 8.5 秒
-  wheelState.stopDurationMs = 9000 + Math.random() * 3500;
+  wheelState.stopDurationMs = 12000 + Math.random() * 6000;
 
   requestAnimationFrame(tickStopSpin);
 }
@@ -979,3 +979,4 @@ resetWheelPool();
 </script>
 </body>
 </html>
+
