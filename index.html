@@ -695,24 +695,25 @@ let wheelStaticCanvas = null;
 let wheelStaticCtx = null;
 let wheelStaticDirty = true;
 
-// 只負責收集名字（不排序、不隨機）
 function buildWheelNamesFromEmployees() {
   const seen = new Set();
   const out = [];
   for (const p of EMPLOYEES) {
     const nm = String(p.name ?? "").trim();
     if (!nm) continue;
+
     if (
-      nm.toLowerCase() === "kico" ||
-      nm.toLowerCase() === "faye faye" ||
-      nm.toLowerCase() === "毅毅" ||
-      nm.toLowerCase() === "jenna" ||
-      nm.toLowerCase() === "yeonu" ||
-      nm.toLowerCase() === "Chul(Everlabs)" ||
-      nm.toLowerCase() === "Kim(Everlabs)"
+      nm === "Kico" ||
+      nm === "Faye Faye" ||
+      nm === "毅毅" ||
+      nm === "Jenna" ||
+      nm === "Yeonu" ||
+      nm === "Chul(Everlabs)" ||
+      nm === "Kim(Everlabs)"
     ) {
       continue;
     }
+
     if (seen.has(nm)) continue;
     seen.add(nm);
     out.push(nm);
@@ -976,5 +977,6 @@ renderTable();
 </script>
 </body>
 </html>
+
 
 
