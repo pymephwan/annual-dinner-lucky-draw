@@ -788,11 +788,15 @@ function buildWheelNamesFromEmployees() {
   for (const p of EMPLOYEES) {
     const nm = String(p.name ?? "").trim();
     if (!nm) continue;
-    if (nm.toLowerCase() === "kico") continue; 
-    if (nm.toLowerCase() === "Faye Faye") continue; 
-    if (nm.toLowerCase() === "毅毅") continue; 
-    if (nm.toLowerCase() === "Jenna") continue; 
-    if (nm.toLowerCase() === "Yeonu") continue; 
+    if (
+      nm.toLowerCase() === "kico" ||
+      nm.toLowerCase() === "faye faye" ||
+      nm.toLowerCase() === "毅毅" ||
+      nm.toLowerCase() === "jenna" ||
+      nm.toLowerCase() === "yeonu"
+    ) {
+      continue;
+    }
     if (seen.has(nm)) continue;
     seen.add(nm);
     out.push(nm);
@@ -1117,6 +1121,7 @@ resetWheelPool();
 </script>
 </body>
 </html>
+
 
 
 
