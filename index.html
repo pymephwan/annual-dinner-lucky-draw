@@ -670,7 +670,7 @@ function escapeHtml(s) {
 }
 
 /* =========================================================
-   Prize Wheel (CONTINUOUS SPIN + LONGER SMOOTH SLOW STOP)
+   Prize Wheel (LONG STOP + RANDOM ORDER EVERY TIME)
 ========================================================= */
 const wheelModalBack = document.getElementById("wheelModalBack");
 const btnWheel = document.getElementById("btnWheel");
@@ -695,6 +695,7 @@ let wheelStaticCanvas = null;
 let wheelStaticCtx = null;
 let wheelStaticDirty = true;
 
+// 只負責收集名字（不排序、不隨機）
 function buildWheelNamesFromEmployees() {
   const seen = new Set();
   const out = [];
@@ -714,7 +715,6 @@ function buildWheelNamesFromEmployees() {
     seen.add(nm);
     out.push(nm);
   }
-  out.sort((a,b)=>a.localeCompare(b, "en"));
   return out;
 }
 
@@ -733,7 +733,6 @@ function updateTopName() {
   elTopName.textContent = names[idx] ?? "—";
 }
 
-// 平順的強減速曲線（後段非常慢，但無過衝）
 function easeOutQuart(t) {
   return 1 - Math.pow(1 - t, 4);
 }
@@ -846,23 +845,6 @@ function drawWheel() {
   updateTopName();
 }
 
-function resetWheelPool() {
-  wheelState.namesPool = buildWheelNamesFromEmployees();
-  wheelState.angle = 0;
-  wheelState.mode = "idle";
-  wheelState.omega = 0;
-  wheelState.omegaTarget = 0;
-  wheelState.lastTs = 0;
-  wheelState.stopStartAngle = 0;
-  wheelState.stopTargetAngle = 0;
-  wheelState.stopStartTime = 0;
-  wheelState.stopDurationMs = 0;
-  btnSpin.disabled = false;
-  btnSpin.textContent = "START SPIN";
-  wheelStaticDirty = true;
-  drawWheel();
-}
-
 /* ===== Continuous spin ===== */
 function startSpinForever() {
   if (!wheelState.namesPool.length) return;
@@ -889,7 +871,7 @@ function tickFreeSpin(ts) {
   requestAnimationFrame(tickFreeSpin);
 }
 
-/* ===== Longer smooth slow stop ===== */
+/* ===== Long smooth slow stop ===== */
 function endSpinAndStop() {
   if (wheelState.mode !== "free") return;
   const names = wheelState.namesPool;
@@ -904,7 +886,6 @@ function endSpinAndStop() {
   const offset = (Math.random() * 0.8 + 0.1) * slice;
   let baseTarget = pointerAngle - (winnerIdx * slice + offset);
 
-  // 至少再轉 5~8 圈（更長的滑動感）
   const extraSpins = 5 + Math.floor(Math.random() * 4); // 5~8圈
   const twoPi = Math.PI * 2;
   const spinsNeeded = Math.ceil((wheelState.angle - baseTarget + extraSpins * twoPi) / twoPi);
@@ -914,7 +895,7 @@ function endSpinAndStop() {
   wheelState.stopTargetAngle = finalTarget;
   wheelState.stopStartTime = performance.now();
 
-  // 拉長停止時間：6 ~ 8.5 秒
+  // 你最後設定的停止時間：20 ~ 30 秒
   wheelState.stopDurationMs = 20000 + Math.random() * 10000;
 
   requestAnimationFrame(tickStopSpin);
@@ -926,9 +907,7 @@ function tickStopSpin(ts) {
   let t = elapsed / wheelState.stopDurationMs;
   t = Math.min(1, Math.max(0, t));
 
-  // 使用 easeOutQuart：後段減速非常明顯且平順
   const eased = easeOutQuart(t);
-
   wheelState.angle = wheelState.stopStartAngle +
                      (wheelState.stopTargetAngle - wheelState.stopStartAngle) * eased;
 
@@ -953,7 +932,24 @@ btnSpin.addEventListener("click", () => {
 
 btnWheel.addEventListener("click", () => {
   wheelModalBack.classList.add("show");
-  if (wheelState.namesPool.length === 0) resetWheelPool();
+
+  // 每次開啟 modal 都重新隨機排列名字
+  const names = buildWheelNamesFromEmployees();
+
+  // Fisher-Yates shuffle
+  for (let i = names.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [names[i], names[j]] = [names[j], names[i]];
+  }
+
+  wheelState.namesPool = names;
+  wheelState.angle = 0;
+  wheelState.mode = "idle";
+  wheelState.omega = 0;
+  wheelState.omegaTarget = 0;
+  wheelState.lastTs = 0;
+  wheelStaticDirty = true;
+
   drawWheel();
 });
 
@@ -975,9 +971,6 @@ document.addEventListener("keydown", (e) => {
 initDrawSelect();
 renderHistory();
 renderTable();
-resetWheelPool();
 </script>
 </body>
 </html>
-
-
